@@ -128,6 +128,12 @@ function newGame(message, display_name)
 				}
 				var categories = game_dom.window.document.getElementsByClassName('category_name');
 				
+				if (categories.length === 0)
+				{
+					newGame(message.display_name);
+					return;
+				}
+				
 				category_strings = [];
 				category_strings.push(categories[0].textContent);
 				category_strings.push(categories[1].textContent);
@@ -258,7 +264,7 @@ function clueTimeout(channel)
 {
 	if (current_clue !== null)
 	{		
-		channel.send("Time's up. The correct response was: " + current_answer);
+		channel.send("Time's up. The correct response was: " + current_clue.answer);
 		
 		refreshForNewClue(channel);
 	}
@@ -465,11 +471,15 @@ function getStrippedResponse(response)
 		stripped_response = stripped_response.substring(response.indexOf('n') + 1);
 	}
 	
+	// Ignore spaces, ' " , ? ! .
 	stripped_response = stripped_response.replace(/\s+/g, '');
 	stripped_response = stripped_response.replace(/\'/g, '');
 	stripped_response = stripped_response.replace(/\"/g, '');
 	stripped_response = stripped_response.replace(/,/g, '');
-	
+	stripped_response = stripped_response.replace(/\?/g, '');
+	stripped_response = stripped_response.replace(/!/g, '');
+	stripped_response = stripped_response.replace(/\./g, '');
+
 	console.log(response + " -> " + stripped_response);
 	
 	return stripped_response;
